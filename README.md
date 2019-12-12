@@ -1,4 +1,4 @@
-# High Performance Computing in Education - Java Instrumentation
+# High Performance Computing in Education - Java Bytecode Instrumentation
 
 This library intends to support the flexible instrumentation of Java
 Bytecode through "target" classes, which encapsulate the necessary
@@ -46,10 +46,9 @@ about creating a writable injection target.
 
 To utilize this instrumentation, add the jar file created with this
 library as the Java Agent when running the code to be instrumented
-on the JVM. This can be done using -Djavaagent:agent.jar, assuming
-the instrumentation jar is called agent. Currently the ant build
-files handles this process for the injector sample code included in
-this repository.
+on the JVM. This can be done using -javaagent:agent\_path.jar.
+Currently the ant build files handles this process for the injector
+sample code included in this repository.
 
 -----
 
