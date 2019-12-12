@@ -1,0 +1,34 @@
+<project>
+
+    <target name="build">
+        <mkdir dir="bin"/>
+        <javac srcdir="src" destdir="bin" debug="true">
+            <classpath>
+                <fileset dir="./byteman-4.0.7">
+                    <include name="lib/*.jar"/>
+                    <include name="contrib/dtest/byteman-dtest.jar"/>
+                </fileset>
+            </classpath>
+            <compilerarg value="-Xlint:unchecked"/>
+        </javac>
+    </target>
+
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+
+    <target name="jar">
+        <jar destfile="agent.jar" basedir="bin">
+            <manifest>
+                <attribute name="Premain-Class" value="testing.Premain"/>
+                <attribute name="Can-Retransform-Classes" value="true"/>
+            </manifest>
+            <zipgroupfileset dir="./byteman-4.0.7/lib">
+                <include name="byteman.jar"/>
+                <!--include
+                     name="contrib/dtest/byteman-dtest.jar"/-->
+            </zipgroupfileset>
+        </jar>
+    </target>
+
+</project>

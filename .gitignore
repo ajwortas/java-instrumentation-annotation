@@ -1,0 +1,113 @@
+# Taken mostly from github and then modified to fit the needs of this repository.
+# Only a portion of the C .gitignore was used.
+# https://github.com/github/gitignore/blob/master/C.gitignore
+# https://github.com/github/gitignore/blob/master/Global/Vim.gitignore
+# https://github.com/github/gitignore/blob/master/Global/Eclipse.gitignore
+# See the CC0 license for more detail:
+# https://github.com/github/gitignore/blob/master/LICENSE
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+##VIM
+# Swap
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-v][a-z]
+[._]sw[a-p]
+
+# Session
+Session.vim
+
+# Temporary
+.netrwhist
+*~
+
+# Auto-generated tag files
+tags
+
+##JAVA
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# LibreOffice lock files
+*.~lock.*
+
+##ECLIPSE
+*/Eclipse/\.metadata/
+*/Eclipse/*/bin/
+*/Eclipse/*/tmp/
+*/Eclipse/*/*.tmp
+*/Eclipse/*/*.bak
+*/Eclipse/*/*.swp
+*/Eclipse/*/*~.nib
+*/Eclipse/*/local.properties
+*/Eclipse/*/\.settings/
+*/Eclipse/*/.loadpath
+*/Eclipse/\.recommenders/
+*/Eclipse/*/.classpath
+*/Eclipse/*/.project
+
+# External tool builders
+*/Eclipse/*/\.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*/Eclipse/*/*.launch
+
+# PyDev specific (Python IDE for Eclipse)
+*/Eclipse/*/*.pydevproject
+
+# CDT-specific (C/C++ Development Tooling)
+*/Eclipse/*/.cproject
+
+# CDT- autotools 
+*/Eclipse/*/.autotools
+
+# Java annotation processor (APT)
+*/Eclipse/*/.factorypath
+
+# PDT-specific (PHP Development Tools)
+*/Eclipse/*/*/.buildpath
+
+# sbteclipse plugin
+*/Eclipse/*/.target
+
+# Tern plugin
+*/Eclipse/*/.tern-project
+
+# TeXlipse plugin
+*/Eclipse/*/.texlipse
+
+# STS (Spring Tool Suite)
+*/Eclipse/*/.springBeans
+
+# Code Recommenders
+*/Eclipse/*/\.recommenders/
+
+# Scala IDE specific (Scala & Java development for Eclipse)
+*/Eclipse/*/.cache-main
+*/Eclipse/*/.scala_dependencies
+*/Eclipse/*/.worksheet
+
+# Don't track Byteman's source
+byteman-*

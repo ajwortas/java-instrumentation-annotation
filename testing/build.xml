@@ -1,0 +1,25 @@
+<project>
+
+    <target name="build">
+        <mkdir dir="bin"/>
+        <javac srcdir="src" destdir="bin" debug="true"/>
+    </target>
+
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+
+    <target name="run">
+        <java classname="testing.Test" fork="true">
+            <jvmarg value="-javaagent:../agent.jar"/>
+            <classpath>
+                <pathelement location="bin"/>
+                <fileset dir="../byteman-4.0.7">
+                    <include name="lib/*.jar"/>
+                    <include name="contrib/dtest/byteman-dtest.jar"/>
+                </fileset>
+            </classpath>
+        </java>
+    </target>
+
+</project>
