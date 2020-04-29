@@ -1,6 +1,6 @@
 # High Performance Computing in Education - Java Bytecode Instrumentation
 
-**This repository is continued work on a project by Robert Price: https://gitlab.com/REPIII/hpc-edu-java-instrumentation/*
+**This repository is continued work on a project by Robert Price: https://gitlab.com/REPIII/hpc-edu-java-instrumentation/**
 
 This library intends to support the flexible instrumentation of Java
 Bytecode through "target" classes, which encapsulate the necessary
