@@ -20,5 +20,5 @@ public interface Injection
      * use of this method, instead employing its own doAction()
      * methods(s) with custom, appropriate signatures.
      */ 
-    void doAction();
+    // void doAction();
 }

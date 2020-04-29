@@ -95,33 +95,33 @@ public abstract class AnAbstractInjectionTargetWritable<T>
         // as we must inject a call before the value is written to
         // get the old value, and after the value is written to get
         // the new value.
-        int i = 0;
-        for (Method method : this.getTargetClass().getMethods())
-        {
-            rules.add(
-                RuleConstructor.createRule(this.getRuleName() + i++)
-                    .onClass(this.getTargetClass())
-                    .inMethod(method.getName())
-                    .helper(this.getHelper())
-                    .atWrite(writable)
-                    .bind(bindClause)
-                    .ifTrue()
-                    .doAction("doActionBefore(writable)")
-                    .build()
-            );
-            rules.add(
-                RuleConstructor.createRule(this.getRuleName() + i++)
-                    .onClass(getTargetClass())
-                    .inMethod(method.getName())
-                    .helper(this.getHelper())
-                    .afterWrite(writable)
-                    .bind(bindClause)
-                    .ifTrue()
-                    .doAction("doActionAfter(writable)")
-                    .build()
-            );
-        }
-
+        // int i = 0;
+        // for (Method method : this.getTargetClass().getMethods())
+        // {
+        //     rules.add(
+        //         RuleConstructor.createRule(this.getRuleName() + i++)
+        //             .onClass(this.getTargetClass())
+        //             .inMethod(method.getName())
+        //             .helper(this.getHelper())
+        //             .atWrite(writable)
+        //             .bind(bindClause)
+        //             .ifTrue()
+        //             .doAction("doActionBefore(writable)")
+        //             .build()
+        //     );
+        //     rules.add(
+        //         RuleConstructor.createRule(this.getRuleName() + i++)
+        //             .onClass(getTargetClass())
+        //             .inMethod(method.getName())
+        //             .helper(this.getHelper())
+        //             .afterWrite(writable)
+        //             .bind(bindClause)
+        //             .ifTrue()
+        //             .doAction("doActionAfter(writable)")
+        //             .build()
+        //     );
+        // }
+        rules.add("RULE DEFAULT-RULE-NAME~~NO-NAME-GIVEN-testing.TargetFieldTest3\nCLASS testing.Test\nMETHOD increment\nAFTER WRITE i\nHELPER testing.TargetFieldTest\nBIND writable:java.lang.Integer = $this.i\nIF true\nDO doActionAfter(writable)\nENDRULE");
         return rules;
 
     }

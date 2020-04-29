@@ -8,6 +8,9 @@
                     <include name="lib/*.jar"/>
                     <include name="contrib/dtest/byteman-dtest.jar"/>
                 </fileset>
+            	<fileset dir="C:\Users\lamem\research-samples">
+            		<include name="autotracing_annotations.jar"/>
+            	</fileset>
             </classpath>
             <compilerarg value="-Xlint:unchecked"/>
         </javac>

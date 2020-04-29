@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jboss.byteman.agent.Main;
+import org.jboss.byteman.agent.submit.Submit;
 import org.jboss.byteman.contrib.dtest.RuleConstructor;
 import org.jboss.byteman.contrib.dtest.Instrumentor;
 import org.jboss.byteman.rule.helper.Helper;
@@ -57,8 +58,8 @@ public class AnInjector implements Injector
     // of that lookup.
     // Currently that is not being done.
     // Thus, annotations are not yet supported.
-    protected Map<Annotation, List<InjectionTarget>> annotatedClassTargets
-        = new HashMap<Annotation, List<InjectionTarget>>();
+    protected Map<Class<? extends Annotation>, List<InjectionTarget>> annotatedClassTargets
+        = new HashMap<Class<? extends Annotation>, List<InjectionTarget>>();
 
     // Byteman needs a copy of the instrumentation reference
     // provided by the JVM. Thus, we keep around a copy, even though
@@ -86,7 +87,7 @@ public class AnInjector implements Injector
         // byteman will automatically reload any class it
         // transforms.
         // This is not the case, however.
-        //System.setProperty("org.jboss.byteman.agent.TransformListener", "");
+        // System.setProperty("org.jboss.byteman.agent.TransformListener", "");
 
         this.loader = new AReloadClassLoader(this.getClass().getClassLoader());
 
@@ -197,7 +198,7 @@ public class AnInjector implements Injector
         }
         else if (target.isTargetClassAnnotated())
         {
-            Annotation annotation = target.getTargetClassAnnotation();
+            Class<? extends Annotation> annotation = target.getTargetClassAnnotation();
             List<InjectionTarget> targets;
             if (this.annotatedClassTargets.containsKey(annotation))
             {
@@ -291,7 +292,10 @@ public class AnInjector implements Injector
         // exceptions.
         try
         {
-            instrumentor = new Instrumentor();
+        	//Byteman will use RMI, event locally, so we set the default RMI port
+        	//To something not likely to be used by student submissions
+        	//(The default, 1099, is used by java RMI libraries)
+            instrumentor = new Instrumentor(new Submit(), 0);
         }
         catch (RemoteException e) {
             e.printStackTrace();
@@ -360,7 +364,6 @@ public class AnInjector implements Injector
             // sub-exceptions of an ill-formatted rule onto
             // getRules().
             for (String rule : target.getRules()) {
-
                 // installScript() throws a generic exception.
                 try
                 {
@@ -407,15 +410,27 @@ public class AnInjector implements Injector
         }
 
         rulesFile.delete();
-
+        // System.out.println(rulesFile);
         this.loader = new AReloadClassLoader(this.getClass().getClassLoader());
         for (InjectionTarget target : targets)
         {
             try
             {
-                this.loader.loadClass(target.getTargetClassName());
+                if(target instanceof MulticlassTarget){
+                    for(String className : ((MulticlassTarget)target).getTargetedClassNames()){
+                        // System.out.println(className);
+                    	System.err.println(className);
+                        this.loader.loadClass(className);
+                        this.loader = new AReloadClassLoader(this.getClass().getClassLoader());
+                    }
+                }
+                else{
+                    this.loader.loadClass(target.getTargetClassName());
+                }
             }
-            catch (ClassNotFoundException e) {}
+            catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
         this.loader = new AReloadClassLoader(this.getClass().getClassLoader());
 

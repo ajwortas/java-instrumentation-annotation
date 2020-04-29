@@ -22,4 +22,9 @@
         </java>
     </target>
 
+    <target name="scantest">
+        <java classname="testing.TestScanning" fork="true">
+        </java>
+    </target>
+
 </project>

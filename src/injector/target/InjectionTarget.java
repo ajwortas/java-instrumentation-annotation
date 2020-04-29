@@ -7,12 +7,12 @@ import java.util.List;
 public interface InjectionTarget extends Injection
 {
     Class<?> getTargetClass();
-    Annotation getTargetClassAnnotation();
+    Class<? extends Annotation> getTargetClassAnnotation();
     String getTargetClassName();
     Class<?> getHelper();
     String getRuleName();
     List<String> getRules();
-    Annotation getTargetAnnotation();
+    Class<? extends Annotation> getTargetAnnotation();
     String getTargetName();
     boolean isTargetClassAnnotated();
     boolean isTargetClassNamed();

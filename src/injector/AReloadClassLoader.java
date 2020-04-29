@@ -71,6 +71,7 @@ public class AReloadClassLoader extends ClassLoader
         {
             try
             {
+                // System.out.println(ioe);
                 return super.loadClass(className);
             } 
             catch (ClassNotFoundException ce) { 

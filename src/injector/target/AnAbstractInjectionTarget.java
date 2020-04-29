@@ -21,9 +21,9 @@ public abstract class AnAbstractInjectionTarget
         "DEFAULT-RULE-NAME~~NO-NAME-GIVEN-";
 
     protected Class targetClass =  null;
-    protected Annotation classAnnotation = null;
+    protected Class<? extends Annotation> classAnnotation = null;
     protected String className = null;
-    protected Annotation targetAnnotation = null;
+    protected Class<? extends Annotation> targetAnnotation = null;
     protected String targetName = null; 
 
 
@@ -56,7 +56,7 @@ public abstract class AnAbstractInjectionTarget
      * @return annotation   Annotation of class being targeted by
      *                      this rule
      */
-    public Annotation getTargetClassAnnotation()
+    public Class<? extends Annotation> getTargetClassAnnotation()
     {
         return this.classAnnotation;
     }
@@ -126,7 +126,7 @@ public abstract class AnAbstractInjectionTarget
      * @return annotation   The annotation associated with this
      *                      target. 
      */ 
-    public Annotation getTargetAnnotation()
+    public Class<? extends Annotation> getTargetAnnotation()
     {
         return this.targetAnnotation;
     }

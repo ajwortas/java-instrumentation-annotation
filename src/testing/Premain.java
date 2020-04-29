@@ -31,7 +31,7 @@ public class Premain
         // When there's only one target it feels silly, but when
         // there are many hopefully this design makes sense and is
         // beneficial.
-        injector.registerTarget(new TargetFieldTest());
+        injector.registerTarget(new AnnotationScanTest());
         injector.inject();
     }
 
