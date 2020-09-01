@@ -21,16 +21,9 @@ public class Premain
         Injector injector = InjectorFactory.getInjectorSingleton();
         if (injector instanceof AnInjector)
         {
-            // Injectors in general don't need an instrumentation
-            // file, but the one Byteman uses does.
             ((AnInjector)injector).setInstrumentation(instr);
         }
-        // Currently one must register all targets and *then* inject
-        // the registered targets. This is to minimize the number of
-        // times Byteman must run.
-        // When there's only one target it feels silly, but when
-        // there are many hopefully this design makes sense and is
-        // beneficial.
+      
         injector.registerTarget(new AnnotationScanTest());
         injector.inject();
     }

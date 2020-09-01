@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="testing/src"/>
+	<classpathentry kind="lib" path="agent.jar"/>
+	<classpathentry kind="lib" path="byteman-4.0.7/contrib/bmunit/byteman-bmunit.jar"/>
+	<classpathentry kind="lib" path="byteman-4.0.7/contrib/bmunit/byteman-bmunit5.jar"/>
+	<classpathentry kind="lib" path="byteman-4.0.7/contrib/dtest/byteman-dtest.jar"/>
+	<classpathentry kind="lib" path="byteman-4.0.7/contrib/jboss-modules-system/byteman-jboss-modules-plugin.jar"/>
+	<classpathentry kind="lib" path="byteman-4.0.7/lib/byteman-install.jar"/>
+	<classpathentry kind="lib" path="byteman-4.0.7/lib/byteman-submit.jar"/>
+	<classpathentry kind="lib" path="byteman-4.0.7/lib/byteman.jar"/>
+	<classpathentry kind="lib" path="byteman-4.0.7/sample/lib/byteman-sample.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
