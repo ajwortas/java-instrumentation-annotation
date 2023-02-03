@@ -1,4 +1,4 @@
-package injector;
+package grader.byteman.injector;
 
 /**
  * Injector Singleton Factory.

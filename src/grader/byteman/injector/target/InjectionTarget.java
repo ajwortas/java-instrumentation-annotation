@@ -1,7 +1,8 @@
-package injector.target;
+package grader.byteman.injector.target;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
+
 
 
 public interface InjectionTarget extends Injection
@@ -17,6 +18,8 @@ public interface InjectionTarget extends Injection
     boolean isTargetClassAnnotated();
     boolean isTargetClassNamed();
     boolean isTargetAnnotated();
+    boolean isTargetMultiClassed();
+    List<String> getTargetNames();    
     Class<?> setTargetClass(Class<?> targetClass);
     String setTargetName(String targetName);
 }

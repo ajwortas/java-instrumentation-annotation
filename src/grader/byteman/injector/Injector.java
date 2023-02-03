@@ -1,8 +1,8 @@
-package injector;
+package grader.byteman.injector;
 
 import java.util.List;
 
-import injector.target.InjectionTarget;
+import grader.byteman.injector.target.InjectionTarget;
 
 /**
  * An Injector takes in targets and injects them into the ASM.

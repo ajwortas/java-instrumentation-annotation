@@ -1,12 +1,7 @@
-package injector.target;
+package grader.byteman.injector.target;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.jboss.byteman.contrib.dtest.RuleConstructor;
-
-import injector.*;
 
 
 /**
@@ -35,6 +30,16 @@ public abstract class AnAbstractInjectionTargetWritable<T>
         this.t = t;
     }
 
+	@Override
+    public boolean isTargetMultiClassed() {
+    	return false;
+    }
+    
+    @Override
+    public List<String> getTargetNames() {
+    	return null;
+    }
+    
 
     /**
      * doAction is not applicable for a writable target; does

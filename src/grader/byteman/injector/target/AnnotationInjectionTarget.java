@@ -1,4 +1,4 @@
-package injector.target;
+package grader.byteman.injector.target;
 import java.lang.annotation.Annotation;
 
 public interface AnnotationInjectionTarget extends InjectionTarget{

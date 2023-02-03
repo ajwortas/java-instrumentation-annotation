@@ -1,30 +1,20 @@
-package injector;
+package grader.byteman.injector;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.lang.ClassNotFoundException;
-import java.lang.instrument.ClassFileTransformer;
-import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.Instrumentation;
-import java.lang.reflect.Method;
-import java.nio.file.FileSystems;
 import java.rmi.RemoteException;
-import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.jboss.byteman.agent.Main;
 import org.jboss.byteman.agent.submit.Submit;
-import org.jboss.byteman.contrib.dtest.RuleConstructor;
 import org.jboss.byteman.contrib.dtest.Instrumentor;
-import org.jboss.byteman.rule.helper.Helper;
-import org.jboss.byteman.rule.Rule;
 
-import injector.target.*;
+import grader.byteman.injector.target.InjectionTarget;
+import grader.byteman.injector.target.MulticlassTarget;
 
 
 /**
@@ -49,8 +39,8 @@ public class AnInjector implements Injector
     // this jar.
     private static String BYTEMAN_JAR_PATH = "";
 
-    protected Map<String, List<InjectionTarget>> namedClassTargets =
-        new HashMap<String, List<InjectionTarget>>();
+    protected HashMap<String, ArrayList<InjectionTarget>> namedClassTargets =
+        new HashMap<String, ArrayList<InjectionTarget>>();
 
     // Byteman does not support class lookup by annotation.
     // If a target identifies its class by annotation we will have to
@@ -58,8 +48,8 @@ public class AnInjector implements Injector
     // of that lookup.
     // Currently that is not being done.
     // Thus, annotations are not yet supported.
-    protected Map<Class<? extends Annotation>, List<InjectionTarget>> annotatedClassTargets
-        = new HashMap<Class<? extends Annotation>, List<InjectionTarget>>();
+    protected HashMap<Class<? extends Annotation>, ArrayList<InjectionTarget>> annotatedClassTargets
+        = new HashMap<Class<? extends Annotation>, ArrayList<InjectionTarget>>();
 
     // Byteman needs a copy of the instrumentation reference
     // provided by the JVM. Thus, we keep around a copy, even though
@@ -87,7 +77,7 @@ public class AnInjector implements Injector
         // byteman will automatically reload any class it
         // transforms.
         // This is not the case, however.
-        // System.setProperty("org.jboss.byteman.agent.TransformListener", "");
+        // System.setProperty("org.jboss.byteman.agent.TransformArrayListener", "");
 
         this.loader = new AReloadClassLoader(this.getClass().getClassLoader());
 
@@ -132,6 +122,37 @@ public class AnInjector implements Injector
 
     }
 
+    private void registerTargetString(InjectionTarget target, String name) {
+        ArrayList<InjectionTarget> targets;
+        if (this.namedClassTargets.containsKey(name)){
+            targets = this.namedClassTargets.get(name);
+        }else {
+            targets = new ArrayList<InjectionTarget>();
+            this.namedClassTargets.put(name, targets);
+        }
+        targets.add(target);
+        if (target.getTargetClass() == null) {
+            try {
+                target.setTargetClass(
+                    this.loader.loadClass(
+                        name
+                    )
+                );
+            } catch (ClassNotFoundException e){
+                this.reportError(
+                    e,
+                    String.format(
+                        "Could not find class %s for rule %s\n",
+                        target.getTargetClassName(),
+                        target.getRuleName()
+                    ),
+                    null
+                );
+            }
+        }
+    }
+    
+    
     /**
      * Register an injection target with this injector.
      *
@@ -146,8 +167,7 @@ public class AnInjector implements Injector
     public boolean registerTarget(InjectionTarget target)
     {
 
-        if (target == null)
-        {
+        if (target == null){
             throw new NullPointerException(
                 "Target attempting to be registered is null."
             );
@@ -155,57 +175,21 @@ public class AnInjector implements Injector
 
         // If the target knows the full formal name of the class it
         // is targeting, we can immediately put it into the
-        // nameClassTargets list.
-        if (
-            target.getTargetClass() != null
-            || target.isTargetClassNamed()
-        )
-        {
-            List<InjectionTarget> targets;
-            String name = target.getTargetClassName();
-            if (this.namedClassTargets.containsKey(name))
-            {
-                targets = this.namedClassTargets.get(name);
-            }
-            else
-            {
-                targets = new ArrayList<InjectionTarget>();
-                this.namedClassTargets.put(name, targets);
-            }
-            targets.add(target);
-            if (target.getTargetClass() == null)
-            {
-                try
-                {
-                    target.setTargetClass(
-                        this.loader.loadClass(
-                            target.getTargetClassName()
-                        )
-                    );
-                } catch (ClassNotFoundException e)
-                {
-                    this.reportError(
-                        e,
-                        String.format(
-                            "Could not find class %s for rule %s\n",
-                            target.getTargetClassName(),
-                            target.getRuleName()
-                        ),
-                        null
-                    );
-                }
-            }
-        }
-        else if (target.isTargetClassAnnotated())
-        {
+        // nameClassTargets ArrayList.
+        if (target.getTargetClass() != null || target.isTargetClassNamed()) {
+        	if(target.isTargetMultiClassed()) {
+        		List<String> targetNames = target.getTargetNames();
+        		for(int i=0;i<targetNames.size();i++) 
+        			registerTargetString(target, targetNames.get(i));
+        	}else {
+        		registerTargetString(target, target.getTargetClassName());
+        	}
+        }else if (target.isTargetClassAnnotated()){
             Class<? extends Annotation> annotation = target.getTargetClassAnnotation();
-            List<InjectionTarget> targets;
-            if (this.annotatedClassTargets.containsKey(annotation))
-            {
+            ArrayList<InjectionTarget> targets;
+            if (this.annotatedClassTargets.containsKey(annotation)){
                 targets = this.annotatedClassTargets.get(annotation);
-            }
-            else
-            {
+            }else{
                 targets = new ArrayList<InjectionTarget>();
                 this.annotatedClassTargets.put(annotation, targets);
             }
@@ -233,14 +217,17 @@ public class AnInjector implements Injector
      */
     public boolean inject()
     {
-        for (List<InjectionTarget> list : this.namedClassTargets.values())
+    	List<InjectionTarget> targets = new ArrayList<>();
+    	
+        for (List<InjectionTarget> list :namedClassTargets.values())
         {
-            this.inject(list);
+           targets.addAll(list);
         }
-        for (List<InjectionTarget> list : this.annotatedClassTargets.values())
+        for (List<InjectionTarget> list :annotatedClassTargets.values())
         {
-            this.inject(list);
+           targets.addAll(list);
         }
+        this.inject(targets);
         this.namedClassTargets.clear();
         this.annotatedClassTargets.clear();
         return true;
@@ -255,16 +242,16 @@ public class AnInjector implements Injector
      */
     public boolean inject(InjectionTarget target)
     {
-        List<InjectionTarget> targets =
+        ArrayList<InjectionTarget> targets =
             new ArrayList<InjectionTarget>();
         targets.add(target);
         return this.inject(targets);
     }
 
     /**
-     * Inject a list of targest into the ASM.
+     * Inject a ArrayList of targest into the ASM.
      *
-     * @param targets           List of targets to be injected into
+     * @param targets           ArrayList of targets to be injected into
      *                          the ASM
      * @return InjectionStatus  Whether or not the injection was
      *                          successful
@@ -321,6 +308,7 @@ public class AnInjector implements Injector
         // For testing before we had target classes that
         // flexibly create rules.
         //
+        
         //String ruleTest = RuleConstructor.createRule("Test")
         //    .onClass("testing.Test")
         //    .inMethod("hello")
@@ -329,41 +317,42 @@ public class AnInjector implements Injector
         //    .ifTrue()
         //    .doAction("debug()")
         //    .build();
-        //String ruleTest = RuleConstructor.createRule("Test")
-        //    .onClass("testing.Test")
-        //    .inMethod("increment")
-        //    .helper(injection.HelperSub.class)
-        //    .atWrite("i")
-        //    .bind("writable:int = $this.i")
-        //    .ifTrue()
-        //    .doAction("onAction(writable)")
-        //    .build();
-        //
-        // installScript() throws a generic exception.
-        //try
-        //{
-        //    instrumentor.installScript("Test", ruleTest);
-        //}
-        //catch (Exception e)
-        //{
-        //    this.reportError(
-        //        e,
-        //        "Could not install script",
-        //        rulesFile
-        //    );
-        //    return false;
-        //}
+        
+        
+//        String ruleTest = RuleConstructor.createRule("Rule ~~ testing.Adder add enter")
+//                .onClass("testing.Adder")
+//                .inMethod("add")
+//                .helper(Comp533A4.SpecificMethodTargeter.class)
+//                .atEntry()
+//                .ifTrue()
+//                .doAction("atEnter($CLASS, $METHOD, $*)")
+//                .build();
+//        try
+//        {
+//            instrumentor.installScript("Test", ruleTest);
+//        }
+//        catch (Exception e)
+//        {
+//            this.reportError(
+//                e,
+//                "Could not install script",
+//                rulesFile
+//            );
+//            return false;
+//        }
 
-        for (InjectionTarget target : targets)
+        for (int i=0;i<targets.size();i++)
         {
-
+        	InjectionTarget target = targets.get(i);
             // TODO Write a custom exception class that all rules
             // files can throw if they are ill formatted. That way
             // we can just catch one exception here instead of
             // the generic Exception. Delegate catching the
             // sub-exceptions of an ill-formatted rule onto
             // getRules().
-            for (String rule : target.getRules()) {
+        	List<String> rules = target.getRules();
+            for (int j=0;j<rules.size();j++) {
+            	String rule = rules.get(j);
                 // installScript() throws a generic exception.
                 try
                 {
@@ -412,12 +401,11 @@ public class AnInjector implements Injector
         rulesFile.delete();
         // System.out.println(rulesFile);
         this.loader = new AReloadClassLoader(this.getClass().getClassLoader());
-        for (InjectionTarget target : targets)
-        {
-            try
-            {
+        for (int i=0;i<targets.size();i++) {
+        	InjectionTarget target = targets.get(i);
+            try{
                 if(target instanceof MulticlassTarget){
-                    for(String className : ((MulticlassTarget)target).getTargetedClassNames()){
+                    for(String className:((MulticlassTarget)target).getTargetedClassNames()){
                         // System.out.println(className);
                     	System.err.println(className);
                         this.loader.loadClass(className);
@@ -425,7 +413,8 @@ public class AnInjector implements Injector
                     }
                 }
                 else{
-                    this.loader.loadClass(target.getTargetClassName());
+                    	this.loader.loadClass(target.getTargetClassName());
+                    	this.loader = new AReloadClassLoader(this.getClass().getClassLoader());
                 }
             }
             catch (ClassNotFoundException e) {
@@ -433,7 +422,6 @@ public class AnInjector implements Injector
             }
         }
         this.loader = new AReloadClassLoader(this.getClass().getClassLoader());
-
 
         return true;
 

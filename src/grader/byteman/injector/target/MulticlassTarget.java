@@ -1,4 +1,5 @@
-package injector.target;
+package grader.byteman.injector.target;
+
 import java.util.List;
 
 public interface MulticlassTarget {

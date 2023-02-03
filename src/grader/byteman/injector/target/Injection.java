@@ -1,4 +1,4 @@
-package injector.target;
+package grader.byteman.injector.target;
 
 /**
  * Interface for Byteman helper classes, support methods whose

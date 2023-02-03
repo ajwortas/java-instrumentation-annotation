@@ -1,53 +1,34 @@
-package injector.target;
+package grader.byteman.injector.target.custom;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import org.jboss.byteman.contrib.dtest.RuleConstructor;
-import injector.AReloadClassLoader;
+import java.util.Set;
+
+import grader.byteman.injector.AReloadClassLoader;
+import grader.byteman.injector.target.AnAbstractInjectionTarget;
+import grader.byteman.injector.target.MulticlassTarget;
 
 
 /**
  * AnAbstractAnnotationScanningInjectionTarget
  */
-public abstract class AnAbstractAnnotationScanningInjectionTarget extends AnAbstractInjectionTarget
-    implements AnnotationInjectionTarget, MulticlassTarget{
+public abstract class AnAbstractAnnotationScanningInjectionTargeter extends AnAbstractInjectionTarget
+    implements AnnotationInjectionTargeter, MulticlassTarget{
 
     protected String searchPath;
     private List<Class<?>> targetedClasses;
 
-    public AnAbstractAnnotationScanningInjectionTarget() {
+    public AnAbstractAnnotationScanningInjectionTargeter() {
         searchPath = System.getProperty("java.class.path");
         getTargetedClasses();
     }
 
-    final public List<String> getRules(){
-        List<String> rules = new ArrayList<String>();
-        int i = 0;
-        for(Method m : findMethodsWithAnnotation()){
-            String[] paramNames = new String[m.getParameterCount()];
-            int j = 0;
-            for(Parameter param : m.getParameters()){
-                paramNames[j++] = param.getName();
-            }
-            rules.add(
-                RuleConstructor.createRule(this.getRuleName() + i++)
-                .onClass(m.getDeclaringClass())
-                .inMethod(m.getName())
-                .helper(this.getHelper())
-                .atEntry()
-                .ifTrue()
-                .doAction("atInvoke($CLASS, $METHOD, $*)")
-                .build()
-            );
-        }
-        return rules;
-    }
+    abstract public List<String> getRules();
 
     private String getPath(File f) {
         try {
@@ -60,7 +41,8 @@ public abstract class AnAbstractAnnotationScanningInjectionTarget extends AnAbst
     public List<Method> findMethodsWithAnnotation(){
         Class<? extends Annotation> targetAnnotation = this.getTargetMethodAnnotation();
         List<Method> annotatedMethods = new ArrayList<Method>();
-        for(Class<?> clazz : targetedClasses){
+        
+        for(Class<?> clazz:targetedClasses){
             for(Method m : clazz.getDeclaredMethods()){
                 if(m.isAnnotationPresent(targetAnnotation)){
                     annotatedMethods.add(m);
@@ -77,7 +59,7 @@ public abstract class AnAbstractAnnotationScanningInjectionTarget extends AnAbst
         }
         targetedClasses = new ArrayList<Class<?>>();
         LinkedList<File> files = new LinkedList<File>();
-        HashSet<String> roots = new HashSet<String>();
+        Set<String> roots = new HashSet<String>();
         targetedClasses = new ArrayList<Class<?>>();
         for (String path : searchPath.split(System.getProperty("path.separator"))) {
             File file = new File(path);
@@ -114,10 +96,21 @@ public abstract class AnAbstractAnnotationScanningInjectionTarget extends AnAbst
 
     public List<String> getTargetedClassNames(){
         List<String> targetedClassNames = new ArrayList<String>();
-        for(Class<?> clazz : getTargetedClasses()){
-            targetedClassNames.add(clazz.getName());
+        List<Class<?>> classes = getTargetedClasses();
+        for(int i=0;i<classes.size();i++){
+            targetedClassNames.add(classes.get(i).getName());
         }
         return targetedClassNames;
     }
 
+	@Override
+    public boolean isTargetMultiClassed() {
+    	return false;
+    }
+    
+    @Override
+    public List<String> getTargetNames() {
+    	return null;
+    }
+    
 }

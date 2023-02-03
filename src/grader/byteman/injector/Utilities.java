@@ -1,4 +1,4 @@
-package injector;
+package grader.byteman.injector;
 
 /**
  * A container of static, general utility functions.

@@ -1,7 +1,6 @@
-package injector.target;
+package grader.byteman.injector.target;
 
 import java.lang.annotation.Annotation;
-import java.util.List;
 
 /**
  * An abstract injection target.

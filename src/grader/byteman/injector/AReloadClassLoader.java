@@ -1,6 +1,9 @@
-package injector;
+package grader.byteman.injector;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 /**
  * A custom class loader so that classes can be loaded before

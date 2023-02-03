@@ -8,7 +8,7 @@
                     <include name="lib/*.jar"/>
                     <include name="contrib/dtest/byteman-dtest.jar"/>
                 </fileset>
-            	<fileset dir="C:\Users\lamem\research-samples">
+            	<fileset dir="./autotracing">
             		<include name="autotracing_annotations.jar"/>
             	</fileset>
             </classpath>
@@ -23,14 +23,18 @@
     <target name="jar">
         <jar destfile="agent.jar" basedir="bin">
             <manifest>
-                <attribute name="Premain-Class" value="testing.Premain"/>
+                <attribute name="Premain-Class" value="premain.Premain"/>
                 <attribute name="Can-Retransform-Classes" value="true"/>
+ 		<attribute name="Implementation-Version" value="test"/> 
             </manifest>
-            <zipgroupfileset dir="./byteman-4.0.7/lib">
-                <include name="byteman.jar"/>
-                <!--include
-                     name="contrib/dtest/byteman-dtest.jar"/-->
+            <zipgroupfileset dir="./byteman-4.0.7">
+                <include name="lib/*.jar"/>
+                <include name="contrib/dtest/byteman-dtest.jar"/>
             </zipgroupfileset>
+            <zipgroupfileset dir="./autotracing">
+                <include name="*.jar"/>
+            </zipgroupfileset>
+
         </jar>
     </target>
 

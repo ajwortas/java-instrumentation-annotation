@@ -1,11 +1,4 @@
-package injector.target;
-
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-
-import injector.*;
-
+package grader.byteman.injector.target;
 
 /**
  * Interface for writable injection targets.
